@@ -178,7 +178,8 @@ Not Found
 
 ## Expected output
 
-These are the exact lines the server writes to the console.
+These are the exact outputs the server produces: the console lines it prints and the response
+bodies it returns over HTTP.
 
 Startup, printed once after the port is bound:
 
