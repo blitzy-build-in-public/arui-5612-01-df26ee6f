@@ -11,6 +11,7 @@ const SHUTDOWN_TIMEOUT_MS = 1000;
 let server = null;
 let resolvedPort = null;
 const openSockets = new Set();
+let shuttingDown = false;
 
 function resolvePort() {
   const configuredPort = process.env.PORT;
@@ -94,11 +95,19 @@ function handleServerError(error) {
 }
 
 function shutdown(signal) {
+  if (shuttingDown) {
+    return;
+  }
+
+  shuttingDown = true;
+
   console.log('Shutting down server (' + signal + ')...');
 
-  server.close(() => {
-    console.log('Server closed.');
-    process.exitCode = 0;
+  server.close((error) => {
+    if (error === undefined) {
+      console.log('Server closed.');
+      process.exitCode = 0;
+    }
   });
 
   for (const socket of openSockets) {
