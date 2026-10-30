@@ -8,8 +8,6 @@ const HELLO_BODY = 'Hello world';
 const NOT_FOUND_BODY = 'Not Found';
 const SHUTDOWN_TIMEOUT_MS = 1000;
 
-// Module scope, not the listening branch: handleServerError and shutdown are registered as listeners,
-// so they reach the running server, and the port for the "already in use" diagnostic, only here.
 let server = null;
 let resolvedPort = null;
 const openSockets = new Set();
@@ -28,7 +26,7 @@ function resolvePort() {
     return port;
   }
 
-  console.error('Configuration error: PORT must be an integer between 1024 and 65535 (received "' + configuredPort + '").');
+  console.error('Configuration error: PORT must be an integer between ' + MIN_PORT + ' and ' + MAX_PORT + ' (received "' + configuredPort + '").');
   console.error('Start the server with a valid port, for example: PORT=8080 npm start');
   return null;
 }
@@ -138,7 +136,6 @@ server.on('error', handleServerError);
 process.on('SIGINT', () => shutdown('SIGINT'));
 
 if (resolvedPort === null) {
-  // The configuration error has already been reported; no listener is created and no port is bound.
   process.exitCode = 1;
 } else {
   server.listen(resolvedPort, () => {
